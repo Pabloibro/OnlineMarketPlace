@@ -8,13 +8,18 @@ from .forms import NewItemForm, EditItemForm
 def items(request):
     query = request.GET.get('query', '')
     items = Item.objects.filter(is_sold=False)
+    category_id = request.GET.get('category', 0)
     categories = Category.objects.all()
+
+    if category_id:
+        items = items.filter(category_id=category_id)
     if query:
         items= items.filter(Q(name__icontains=query) | Q(description__icontains=query))
     return render(request, 'item/items.html', {
         'items': items,
         'query': query,
-        "categories": categories
+        "categories": categories,
+        'category_id': int(category_id)
     })
 
 def detail(request, pk):
